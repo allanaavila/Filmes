@@ -2,11 +2,13 @@
 #include <iostream>
 #include <conio.h>
 #include <stdio.h>
+#include<locale.h>
 #include "registros.h"
 
 
 int main()
 {
+	setlocale(LC_ALL, "Portuguese");
 	
 	FILE *arquivo;
 
@@ -15,14 +17,14 @@ int main()
 		if ((arquivo = fopen("dados.dat", "wb+")) == NULL)
 		{
 			printf(" Arquivo txt não pode ser aberto!\n");
-			return 1;
+			system("pause");
 		}
 	}
 
 	menuOpcao(arquivo);
 	
 	
-	return 0;
+	return 1;
 } 
 
 void menuOpcao(FILE *arquivo)
@@ -32,12 +34,12 @@ void menuOpcao(FILE *arquivo)
 	do{
 		system("CLS"); 
 		printf("============ Registro de Filme ==========\n");
-		printf("1.Cadastrar Filme \n");
-		printf("2.Consultar todos os Filmes\n");
-		printf("3.Consultar Filmes por codigo de Cadastro\n");
-		printf("4.Gerar arquivo dos filmes em TXT\n");
-		printf("5.Excluir cadastro\n");
-		printf("6.Sair\n");
+		printf("1. Cadastrar Filme \n");
+		printf("2. Consultar todos os Filmes\n");
+		printf("3. Consultar Filmes por codigo de Cadastro\n");
+		printf("4. Gerar arquivo dos filmes em TXT\n");
+		printf("5. Excluir cadastro\n");
+		printf("6. Finalizar cadastro\n");
 		printf("=================================\n");
 		printf("Opcao: ");
 		scanf("%d%*c", &menu);
@@ -60,7 +62,7 @@ void menuOpcao(FILE *arquivo)
 			excluirCadastro(arquivo);
 			break;
 		default:
-			printf("Pesquisa Finalizada! \n");
+			printf("Cadastro do filme finalizado! \n");
 			fclose(arquivo);		  
 		}
 	}while(menu != 6);	
@@ -86,7 +88,7 @@ void criarArquivoTXT(FILE *arquivo){
 	FILE *arquivoTXT = fopen(nomeArquivo, "w");  //abrir arquivo
     
 	
-	if (arquivoTXT == NULL){
+	if (!arquivoTXT){
 		
 		printf("Problemas na criacao do arquivo! \n");
 		return;
@@ -103,11 +105,13 @@ void criarArquivoTXT(FILE *arquivo){
 		fread(&cadastro, sizeof(Cadastrar), 1, arquivo);
 		
 		fprintf(arquivoTXT, "Filme.............: %s\n" , cadastro.filme);
-		fprintf(arquivoTXT, "Codigo............: %d \n", cadastro.codigo);
+		fprintf(arquivoTXT, "Codigo............: %s \n", cadastro.codigo);
 		fprintf(arquivoTXT, "Genero............: %s \n", cadastro.genero);
-		fprintf(arquivoTXT, "Ano...............: %d \n", cadastro.ano);
+		fprintf(arquivoTXT, "Ano...............: %s \n", cadastro.ano);
 		fprintf(arquivoTXT, "Diretor...........: %s \n", cadastro.diretor);
 		fprintf(arquivoTXT, "Editora...........: %s \n", cadastro.editora);
+		fprintf(arquivoTXT,  "Status: A = Apagado || C = Cadastrado \n");
+		fprintf(arquivoTXT, "Status............: %c \n", cadastro.status);
 		fprintf(arquivoTXT, "---------------------------------------------------------------------\n");
 			
 	}
@@ -119,34 +123,43 @@ void criarArquivoTXT(FILE *arquivo){
 void cadastrarFilme(FILE *arquivo){
 	
 	char confirma;
+	cadastro.status = 'C';
 	fflush(stdin);
 
-	printf("--------------+ Agendamento da Reserva +-------------- \n");
-	printf("Numero da reserva: %d\n\n", tamanho(arquivo) + 1);
+	printf("--------------+ Cadastro do Filme +-------------- \n");
+	printf("ID...................: %d\n\n", tamanho(arquivo) + 1);
 	
 	printf("Filme................: ");
+	fflush(stdin);
 	gets(cadastro.filme);
 	printf("Codigo...............: ");
-	scanf("%d%*c", &cadastro.codigo);
+	fflush(stdin);
+	gets(cadastro.codigo);
 	printf("Genero...............: ");
+	fflush(stdin);
 	gets(cadastro.genero);
 	printf("Ano..................: ");
-	scanf("%d%*c", &cadastro.ano);
+	fflush(stdin);
+	gets(cadastro.ano);
 	printf("Diretor..............: ");
+	fflush(stdin);
 	gets(cadastro.diretor);
 	printf("Editora..............: ");
+	fflush(stdin);
 	gets(cadastro.editora);
-	printf("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+	printf("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
 	
-	printf("Confirma a reserva [S|N]: ");
-	scanf("%c", &confirma);
+	cadastro.id = tamanho(arquivo) + 1;
+	
+	printf("Confirma ao cadastro [S|N]: ");
+	scanf(" %c", &confirma);
 
 	if (toupper(confirma) == 'S')
 	{
-		printf("Salvando reserva...\n\n");
+		printf("Salvando cadastro do filme...\n\n");
 		fseek(arquivo, 0, SEEK_END); //end parte final do arquivo
 		fwrite(&cadastro, sizeof(Cadastrar), 1, arquivo);
-		printf("Reserva concluida com sucesso! \n");
+		printf("Cadastro concluido com sucesso! \n");
 	}
 	system("pause");
 }
@@ -155,19 +168,25 @@ void consultarListaFilmes(FILE *arquivo){
 	int i;
 	
 	printf("--------------+ LISTA DOS FILMES +-------------- \n");
+	
 	for(i = 0; i < tamanho(arquivo); i++)
 	{	
 		fseek(arquivo, i * sizeof(Cadastrar),SEEK_SET);
 		fread(&cadastro, sizeof(Cadastrar), 1, arquivo);
-			
-		printf("Numero da Lista...: (%d)\n", i + 1);
-		printf("Codigo............: %d \n", cadastro.codigo);
-		printf("Filme.............: %s\n" , cadastro.filme);
-		printf("Genero............: %s \n", cadastro.genero);
-		printf("Ano...............: %d \n", cadastro.ano);
-		printf("Diretor...........: %s \n", cadastro.diretor);
-		printf("Editora...........: %s \n", cadastro.editora);
-		printf("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+		
+		if(cadastro.status == 'C')
+		{
+			printf("ID................:(%d)\n", cadastro.id);
+			printf("Codigo............: %s \n", cadastro.codigo);
+			printf("Filme.............: %s\n" , cadastro.filme);
+			printf("Genero............: %s \n", cadastro.genero);
+			printf("Ano...............: %s \n", cadastro.ano);
+			printf("Diretor...........: %s \n", cadastro.diretor);
+			printf("Editora...........: %s \n", cadastro.editora);
+			printf("Status: A = Apagado || C = Cadastrado \n");
+			printf("Status............: %c \n", cadastro.status);
+			printf("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");	
+		}	
 	}
 	system("pause");
 }
@@ -176,26 +195,35 @@ void consultarFilmeCodigo(FILE *arquivo){
 	
 	int numero;
 	
-	printf("----------+ Consulte pelo codigo da reserva +----------\n ");
-	printf("Informe o codigo da reserva: ");
+	printf("Informe o ID do filme para consultar: ");
 	scanf("%d", &numero);
 	
-	if((numero <= tamanho(arquivo)) && (numero > 0))
+	if ((numero <= tamanho(arquivo)) && (numero > 0))
 	{
 		fseek(arquivo, (numero - 1) * sizeof(Cadastrar), SEEK_SET);
 		fread(&cadastro, sizeof(Cadastrar), 1, arquivo);
-
-		printf("--------------+ FILME (%d) +-------------- \n", numero);
-		printf("Reserva...........: %d \n", numero);
-		printf("Codigo............: %d \n", cadastro.codigo);
-		printf("Filme.............: %s\n" , cadastro.filme);
-		printf("Genero............: %s \n", cadastro.genero);
-		printf("Ano...............: %d \n", cadastro.ano);
-		printf("Diretor...........: %s \n", cadastro.diretor);
-		printf("Editora...........: %s \n", cadastro.editora);
-		printf("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
-	}else{
-		printf("Numero da reserva invalido! \n");
+		
+		if(cadastro.status == 'C')
+		{
+			printf("ID................:(%d)\n", cadastro.id);
+			printf("Codigo............: %s \n", cadastro.codigo);
+			printf("Filme.............: %s\n" , cadastro.filme);
+			printf("Genero............: %s \n", cadastro.genero);
+			printf("Ano...............: %s \n", cadastro.ano);
+			printf("Diretor...........: %s \n", cadastro.diretor);
+			printf("Editora...........: %s \n", cadastro.editora);
+			printf("Status: A = Apagado || C = Cadastrado \n");
+			printf("Status............: %c \n", cadastro.status);
+		}
+		else
+		{
+			printf("Esse filme esta indisponivel no cadastro. \n");
+		}
+		
+	}
+	else
+	{
+		printf("ID invalido!\n");
 	}
 	system("pause");
 }
@@ -203,32 +231,45 @@ void consultarFilmeCodigo(FILE *arquivo){
 void excluirCadastro(FILE *arquivo)
 {
 	char confirma;
-	int nr;
+	int numero;
 
-	printf("\nInforme o codigo da reserva para excluir\n");
-	scanf("%d", &nr);
+	printf("\nInforme o Id que deseja excluir:\n");
+	fflush(stdin);
+	scanf("%d", &numero);
 	
-	if ((nr <= tamanho(arquivo)) && (nr > 0))
+	if ((numero <= tamanho(arquivo)) && (numero > 0))
 	{
-		fseek(arquivo, (nr - 1) * sizeof(Cadastrar), SEEK_SET);
+		fseek(arquivo, (numero - 1) * sizeof(Cadastrar), SEEK_SET);
 		fread(&cadastro, sizeof(Cadastrar), 1, arquivo);
+		fflush(stdin);
 		
-		printf("Filme........:%s \n", cadastro.filme);
-		printf("Codigo....:%d \n", cadastro.codigo);
-		printf("Genero......:%s \n", cadastro.genero);
-			
-		printf("\nConfirma excluir essa reserva: [S|N] ");
-		//getchar();
-		scanf(" %c", &confirma);
-
-		if (toupper(confirma) == 'S')
+		if (cadastro.status == 'C')
 		{
-			printf("excluindo reserva...\n\n");
-			fseek(arquivo, (nr - 1) * sizeof(Cadastrar), SEEK_SET);
-			fwrite(&cadastro, sizeof(Cadastrar), 1, arquivo);
+			printf("Filme........: %s \n", cadastro.filme);
+			printf("Codigo.......: %s \n", cadastro.codigo);
+			printf("Ano..........: %s \n", cadastro.ano);
+			printf("Genero.......: %s \n", cadastro.genero);
+			printf("Status: A = Apagado || C = Cadastrado \n");
+			printf("Status.......: %c \n", cadastro.status);
+			
+			printf("Deseja excluir cadastro: [S|N] \n");
+			scanf(" %c", &confirma);
+
+			if (toupper(confirma) == 'S')
+			{
+				printf("analisando solicitacao...\n\n");
+				cadastro.status = 'A';
+				fseek(arquivo, (numero - 1) * sizeof(Cadastrar), SEEK_SET);
+				fwrite(&cadastro, sizeof(Cadastrar), 1, arquivo);
+				printf("Cadastro do filme excluido com sucesso! \n");
+			}
 		}
-	}else{
-		printf("\nNumero de reserva invalido!\n");
+		else
+			printf("Este filme nao esta disponivel no cadastro \n");
+	}
+	else
+	{
+		printf("Numero do cadastro invalido!\n");
 	}
 	system("pause");
 }

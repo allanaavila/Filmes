@@ -1,12 +1,14 @@
 
 struct Cadastrar
 {
-	char filme[40];
-	char diretor[40];    
-	int codigo[11];
-	char editora[40];
-	char genero[40];
-	int ano[4];
+	char filme[30];
+	char diretor[20];    
+	char codigo[10];
+	char editora[20];
+	char genero[10];
+	char ano[4];
+	char status;
+	int id;
 }cadastro;
 
 
