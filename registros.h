@@ -1,17 +1,17 @@
 
 struct Cadastrar
 {
-	char filme[30];
-	char diretor[20];    
-	char codigo[10];
-	char editora[20];
-	char genero[10];
-	char ano[4];
+	char filme[40];
+	char diretor[40];    
+	char codigo[30];
+	char assistir[30];
+	char genero[30];
+	char ano[10];
 	char status;
 	int id;
 }cadastro;
 
-
+void abertura();
 int tamanho(FILE *arquivo);
 void cadastrarFilme(FILE *arquivo);
 void consultarListaFilmes(FILE *arquivo);

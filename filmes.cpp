@@ -12,9 +12,9 @@ int main()
 	
 	FILE *arquivo;
 
-	if ((arquivo = fopen("dados.dat", "rb+")) == NULL)
+	if ((arquivo = fopen("cadastros.dat", "rb+")) == NULL)
 	{
-		if ((arquivo = fopen("dados.dat", "wb+")) == NULL)
+		if ((arquivo = fopen("cadastros.dat", "wb+")) == NULL)
 		{
 			printf(" Arquivo txt não pode ser aberto!\n");
 			system("pause");
@@ -33,13 +33,14 @@ void menuOpcao(FILE *arquivo)
 	
 	do{
 		system("CLS"); 
-		printf("============ Registro de Filme ==========\n");
+		abertura();
+		printf("============ Cadastro de Filme ==========\n");
 		printf("1. Cadastrar Filme \n");
-		printf("2. Consultar todos os Filmes\n");
-		printf("3. Consultar Filmes por codigo de Cadastro\n");
-		printf("4. Gerar arquivo dos filmes em TXT\n");
-		printf("5. Excluir cadastro\n");
-		printf("6. Finalizar cadastro\n");
+		printf("2. Consultar todos os Filmes \n");
+		printf("3. Consultar Filmes por codigo de Cadastro \n");
+		printf("4. Gerar arquivo dos filmes em TXT \n");
+		printf("5. Excluir cadastro \n");
+		printf("6. Finalizar cadastro \n");
 		printf("=================================\n");
 		printf("Opcao: ");
 		scanf("%d%*c", &menu);
@@ -94,8 +95,8 @@ void criarArquivoTXT(FILE *arquivo){
 		return;
 	}
 	
-	fprintf(arquivoTXT,"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
-	fprintf(arquivoTXT, "                       ----------------------- LISTA DOS FILMES ----------------------- \n\n");
+	fprintf(arquivoTXT,"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+	fprintf(arquivoTXT, "----------------------- LISTA DOS FILMES ----------------------- \n\n");
 	
 	int i;
 
@@ -109,13 +110,13 @@ void criarArquivoTXT(FILE *arquivo){
 		fprintf(arquivoTXT, "Genero............: %s \n", cadastro.genero);
 		fprintf(arquivoTXT, "Ano...............: %s \n", cadastro.ano);
 		fprintf(arquivoTXT, "Diretor...........: %s \n", cadastro.diretor);
-		fprintf(arquivoTXT, "Editora...........: %s \n", cadastro.editora);
-		fprintf(arquivoTXT,  "Status: A = Apagado || C = Cadastrado \n");
+		fprintf(arquivoTXT, "Aonde assistir....: %s \n", cadastro.assistir);
+		fprintf(arquivoTXT, "Status: A = Apagado || C = Cadastrado \n");
 		fprintf(arquivoTXT, "Status............: %c \n", cadastro.status);
 		fprintf(arquivoTXT, "---------------------------------------------------------------------\n");
 			
 	}
-	fprintf(arquivoTXT,"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
+	fprintf(arquivoTXT,"+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
 	fclose(arquivoTXT);
 }
 
@@ -127,26 +128,22 @@ void cadastrarFilme(FILE *arquivo){
 	fflush(stdin);
 
 	printf("--------------+ Cadastro do Filme +-------------- \n");
-	printf("ID...................: %d\n\n", tamanho(arquivo) + 1);
+	printf("ID...................: %d \n", tamanho(arquivo) + 1);
 	
 	printf("Filme................: ");
-	fflush(stdin);
 	gets(cadastro.filme);
 	printf("Codigo...............: ");
-	fflush(stdin);
 	gets(cadastro.codigo);
 	printf("Genero...............: ");
-	fflush(stdin);
 	gets(cadastro.genero);
 	printf("Ano..................: ");
-	fflush(stdin);
 	gets(cadastro.ano);
 	printf("Diretor..............: ");
-	fflush(stdin);
 	gets(cadastro.diretor);
-	printf("Editora..............: ");
-	fflush(stdin);
-	gets(cadastro.editora);
+	printf("Aonde assitir........: ");
+	gets(cadastro.assistir);
+	
+	printf("Status..............: %c ", cadastro.status);
 	printf("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
 	
 	cadastro.id = tamanho(arquivo) + 1;
@@ -182,7 +179,7 @@ void consultarListaFilmes(FILE *arquivo){
 			printf("Genero............: %s \n", cadastro.genero);
 			printf("Ano...............: %s \n", cadastro.ano);
 			printf("Diretor...........: %s \n", cadastro.diretor);
-			printf("Editora...........: %s \n", cadastro.editora);
+			printf("Aonde assistir....: %s \n", cadastro.assistir);
 			printf("Status: A = Apagado || C = Cadastrado \n");
 			printf("Status............: %c \n", cadastro.status);
 			printf("\n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");	
@@ -203,7 +200,7 @@ void consultarFilmeCodigo(FILE *arquivo){
 		fseek(arquivo, (numero - 1) * sizeof(Cadastrar), SEEK_SET);
 		fread(&cadastro, sizeof(Cadastrar), 1, arquivo);
 		
-		if(cadastro.status == 'C')
+		if(cadastro.status == 'C') 
 		{
 			printf("ID................:(%d)\n", cadastro.id);
 			printf("Codigo............: %s \n", cadastro.codigo);
@@ -211,7 +208,7 @@ void consultarFilmeCodigo(FILE *arquivo){
 			printf("Genero............: %s \n", cadastro.genero);
 			printf("Ano...............: %s \n", cadastro.ano);
 			printf("Diretor...........: %s \n", cadastro.diretor);
-			printf("Editora...........: %s \n", cadastro.editora);
+			printf("Aonde assistir....: %s \n", cadastro.assistir);
 			printf("Status: A = Apagado || C = Cadastrado \n");
 			printf("Status............: %c \n", cadastro.status);
 		}
@@ -247,8 +244,6 @@ void excluirCadastro(FILE *arquivo)
 		{
 			printf("Filme........: %s \n", cadastro.filme);
 			printf("Codigo.......: %s \n", cadastro.codigo);
-			printf("Ano..........: %s \n", cadastro.ano);
-			printf("Genero.......: %s \n", cadastro.genero);
 			printf("Status: A = Apagado || C = Cadastrado \n");
 			printf("Status.......: %c \n", cadastro.status);
 			
@@ -272,5 +267,17 @@ void excluirCadastro(FILE *arquivo)
 		printf("Numero do cadastro invalido!\n");
 	}
 	system("pause");
+}
+
+void abertura()
+{
+	printf("				 /$$$$$$$$ /$$$$$$ /$$       /$$      /$$ /$$$$$$$$  /$$$$$$          \n");
+	printf("				| $$_____/|_  $$_/| $$      | $$$    /$$$| $$_____/ /$$__  $$         \n");
+	printf("				| $$        | $$  | $$      | $$$$  /$$$$| $$      | $$  \\__/        \n");
+	printf("				| $$$$$     | $$  | $$      | $$ $$/$$ $$| $$$$$   |  $$$$$$          \n");
+	printf("				| $$__/     | $$  | $$      | $$  $$$| $$| $$__/    \\____  $$        \n");
+	printf("				| $$        | $$  | $$      | $$\\  $ | $$| $$       /$$  \\ $$       \n");
+	printf("				| $$       /$$$$$$| $$$$$$$$| $$ \\/  | $$| $$$$$$$$|  $$$$$$/        \n");
+	printf("				|__/      |______/|________/|__/     |__/|________/ \\______/         \n");
 }
 
